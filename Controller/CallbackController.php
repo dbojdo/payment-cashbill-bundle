@@ -109,7 +109,7 @@ class CallbackController extends Controller
         
         $route = $this->container->getParameter('webit_accounting_payment_cashbill.return_route');
         $url = $this->generateUrl($route,$data,Router::ABSOLUTE_PATH);
-        die(var_dump($url));
+        
         return $this->redirect($url);
     }
 }
