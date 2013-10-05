@@ -1,0 +1,29 @@
+{
+	"name" : "webit-accounting/payment-cashbill-bundle",
+	"description" : "Web-IT Payment Cashbill Bundle",
+	"type" : "symfony-bundle",
+	"authors" : [{
+			"name" : "Web-IT",
+			"homepage" : "http://www.web-it.eu"
+		}
+	],
+	"keywords" : [
+		"web-it",
+		"order bundle",
+		"e-commerce"
+	],
+	"homepage" : "http://www.web-it.eu",
+	"license" : [
+		"Web-IT"
+	],
+	"require" : {
+		"php" : ">=5.3.2",
+		"jms/payment-core-bundle" : "dev-master"
+	},
+	"autoload" : {
+		"psr-0" : {
+			"Webit\\Accounting\\PaymentCashbillBundle" : ""
+		}
+	},
+	"target-dir" : "Webit/Accounting/PaymentCashbillBundle"
+}
