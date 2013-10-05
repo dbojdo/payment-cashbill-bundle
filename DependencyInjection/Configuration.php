@@ -19,10 +19,14 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('webit_accounting_payment_cashbill');
-
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode->children()
+            ->scalarNode('client_id')->isRequired()->end()
+            ->scalarNode('pos_id')->isRequired()->end()
+            ->scalarNode('private_key')->isRequired()->end()
+            ->scalarNode('url')->defaultValue('https://www.cashbill.pl/cblite/pay.php')->canNotBeEmpty()->end()
+            ->scalarNode('return_route')->isRequired()->end()
+            ->scalarNode('test_mode')->isRequired()->defaultTrue()->end()
+        ->end();
 
         return $treeBuilder;
     }

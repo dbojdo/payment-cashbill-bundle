@@ -4,17 +4,33 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <!--
     <parameters>
-        <parameter key="webit_accounting_payment_cashbill.example.class">Webit\Accounting\PaymentCashbillBundle\Example</parameter>
+        <parameter key="webit_accounting_payment_cashbill.token.class">Webit\Accounting\PaymentCashbillBundle\Client\Token</parameter>
+        <parameter key="webit_accounting_payment_cashbill.sign_calculator.class">Webit\Accounting\PaymentCashbillBundle\Form\SignCalculator</parameter>
+        <parameter key="webit_accounting_payment_cashbill.direct_plugin.class">Webit\Accounting\PaymentCashbillBundle\Plugin\CashbillDirectPlugin</parameter>
+        <parameter key="webit_accounting_payment_cashbill.form.direct_type.class">Webit\Accounting\PaymentCashbillBundle\Form\Type\DirectType</parameter>
     </parameters>
 
     <services>
-        <service id="webit_accounting_payment_cashbill.example" class="%webit_accounting_payment_cashbill.example.class%">
-            <argument type="service" id="service_id" />
-            <argument>plain_value</argument>
-            <argument>%parameter_name%</argument>
+        <service id="webit_accounting_payment_cashbill.token" class="%webit_accounting_payment_cashbill.token.class%" public="false">
+        </service>
+        <service id="webit_accounting_payment_cashbill.sign_calculator" class="%webit_accounting_payment_cashbill.sign_calculator.class%">
+        	<argument type="service" id="webit_accounting_payment_cashbill.token"></argument>
+        </service>
+        <service id="webit_accounting_payment_cashbill.direct_plugin" class="%webit_accounting_payment_cashbill.direct_plugin.class%">
+        	<argument type="service" id="router"/>
+        	<argument type="service" id="webit_accounting_payment_cashbill.token"/>
+            <argument type="service" id="webit_accounting_payment_cashbill.sign_calculator"/>
+            <argument>%webit_accounting_payment_cashbill.url%</argument>
+            <argument>%webit_accounting_payment_cashbill.test_mode%</argument>
+            <call method="setBuzz">
+            	<argument type="service" id="buzz"></argument>
+            </call>
+            <tag name="payment.plugin" />
+        </service>
+        <service id="webit_accounting_payment_cashbill.form.direct_type" class="%webit_accounting_payment_cashbill.form.direct_type.class%">
+            <tag name="payment.method_form_type" />
+            <tag name="form.type" alias="cashbill_direct" />
         </service>
     </services>
-    -->
 </container>

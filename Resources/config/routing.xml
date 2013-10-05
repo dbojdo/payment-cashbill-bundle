@@ -4,7 +4,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="webit_accounting_payment_cashbill_homepage" pattern="/hello/{name}">
-        <default key="_controller">WebitAccountingPaymentCashbillBundle:Default:index</default>
+    <route id="webit_accounting_payment_cashbill_check_transaction" pattern="/check-transaction">
+        <default key="_controller">WebitAccountingPaymentCashbillBundle:Callback:check</default>
+    </route>
+    <route id="webit_accounting_payment_cashbill_payment_return" pattern="/return">
+        <default key="_controller">WebitAccountingPaymentCashbillBundle:Callback:return</default>
     </route>
 </routes>
