@@ -1,7 +1,7 @@
 <?php
 namespace Webit\Accounting\PaymentCashbillBundle\RedirectFormParser;
 
-use Symfony\Component\CssSelector\Parser;
+use Symfony\Component\CssSelector\CssSelector;
 
 class RedirectFormParserHtml5 implements RedirectFormParserInterface {
 	/**
@@ -16,14 +16,14 @@ class RedirectFormParserHtml5 implements RedirectFormParserInterface {
 
 		$xpath = new \DOMXPath($document);
 		$url = null;
-		foreach ($xpath->query(Parser::cssToXpath('form')) as $node)
+		foreach ($xpath->query(CssSelector::toXpath('form')) as $node)
 		{
 			$url = (string)$node->getAttribute('action');
 			break;
 		}
 		 
 		$token = null;
-		foreach ($xpath->query(Parser::cssToXpath('form input[name="token"]')) as $node)
+		foreach ($xpath->query(CssSelector::toXpath('form input[name="token"]')) as $node)
 		{
 			$token = (string)$node->getAttribute('value');
 			break;
@@ -34,7 +34,7 @@ class RedirectFormParserHtml5 implements RedirectFormParserInterface {
 		}
 		
 		$url = sprintf('%s?token=%s',$url, $token);
-		
+	
 		return $url;
 	}
 }
