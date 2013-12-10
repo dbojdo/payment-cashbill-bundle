@@ -9,6 +9,8 @@
         <parameter key="webit_accounting_payment_cashbill.sign_calculator.class">Webit\Accounting\PaymentCashbillBundle\Form\SignCalculator</parameter>
         <parameter key="webit_accounting_payment_cashbill.direct_plugin.class">Webit\Accounting\PaymentCashbillBundle\Plugin\CashbillDirectPlugin</parameter>
         <parameter key="webit_accounting_payment_cashbill.form.direct_type.class">Webit\Accounting\PaymentCashbillBundle\Form\Type\DirectType</parameter>
+        <parameter key="webit_accounting_payment_cashbill.redirect_form_parser.simple.class">Webit\Accounting\PaymentCashbillBundle\RedirectFormParser\RedirectFormParserSimple</parameter>
+        <parameter key="webit_accounting_payment_cashbill.redirect_form_parser.html5.class">Webit\Accounting\PaymentCashbillBundle\RedirectFormParser\RedirectFormParserHtml5</parameter>
     </parameters>
 
     <services>
@@ -17,10 +19,14 @@
         <service id="webit_accounting_payment_cashbill.sign_calculator" class="%webit_accounting_payment_cashbill.sign_calculator.class%">
         	<argument type="service" id="webit_accounting_payment_cashbill.token"></argument>
         </service>
+        <service id="webit_accounting_payment_cashbill.redirect_form_parser.simple" class="%webit_accounting_payment_cashbill.redirect_form_parser.simple.class%" />
+        <service id="webit_accounting_payment_cashbill.redirect_form_parser.html5" class="%webit_accounting_payment_cashbill.redirect_form_parser.html5.class%" />
+        <service id="webit_accounting_payment_cashbill.redirect_form_parser" alias="webit_accounting_payment_cashbill.redirect_form_parser.html5" />
         <service id="webit_accounting_payment_cashbill.direct_plugin" class="%webit_accounting_payment_cashbill.direct_plugin.class%">
         	<argument type="service" id="router"/>
         	<argument type="service" id="webit_accounting_payment_cashbill.token"/>
             <argument type="service" id="webit_accounting_payment_cashbill.sign_calculator"/>
+            <argument type="service" id="webit_accounting_payment_cashbill.redirect_form_parser"/>
             <argument>%webit_accounting_payment_cashbill.url%</argument>
             <argument>%webit_accounting_payment_cashbill.test_mode%</argument>
             <call method="setBuzz">

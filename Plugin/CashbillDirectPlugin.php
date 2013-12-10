@@ -20,28 +20,8 @@ use Symfony\Component\Routing\RouterInterface;
 use Webit\Accounting\PaymentCashbillBundle\Client\TokenInterface;
 use Buzz\Browser;
 use Symfony\Component\CssSelector\CssSelector;
+use Webit\Accounting\PaymentCashbillBundle\RedirectFormParser\RedirectFormParserInterface;
 
-/*
- * Copyright 2012 ETSGlobal <e4-devteam@etsglobal.org>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * Dotpay payment plugin
- *
- * @author ETSGlobal <e4-devteam@etsglobal.org>
- */
 class CashbillDirectPlugin extends AbstractPlugin
 {
     const STATUS_OK = 'ok';
@@ -86,16 +66,23 @@ class CashbillDirectPlugin extends AbstractPlugin
    
     /**
      * 
+     * @var RedirectFormParserInterface
+     */
+    protected $rfp;
+    
+    /**
+     * 
      * @param Router $router
      * @param SignCalculatorInterface $signCalculator
      * @param string $url
      * @param bool $testMode
      */
-    public function __construct(RouterInterface $router, TokenInterface $token, SignCalculatorInterface $signCalculator, $url, $testMode)
+    public function __construct(RouterInterface $router, TokenInterface $token, SignCalculatorInterface $signCalculator, RedirectFormParserInterface $rfp, $url, $testMode)
     {
         $this->router = $router;
         $this->token = $token;
         $this->signCalculator = $signCalculator;
+        $this->rfp = $rfp;
         $this->url = $url;
         $this->testMode = $testMode;
     }
@@ -160,7 +147,10 @@ class CashbillDirectPlugin extends AbstractPlugin
         $msg = $this->buzz->submit($this->url, $postData);
         
         $content = $msg->getContent();
-        $url = $this->parseContent($content);
+        $url = $this->rfp->getRedirectUrl($content);
+        if($url == false) {
+        	throw new \RuntimeException('Cannot determinate Cashbill redirect url.');
+        }
 
         $actionRequest->setAction(new VisitUrl($url));
 

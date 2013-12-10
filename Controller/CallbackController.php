@@ -18,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
  * @author dbojdo
  */
 class CallbackController extends Controller
-{    
+{
     /**
      * 
      * @param int $id
@@ -47,10 +47,10 @@ class CallbackController extends Controller
         $piId = (int)$this->getRequest()->get('userdata');
         $pi = $this->getPaymentInstruction($piId);
         
-//         $this->get('event_dispatcher')->dispatch(
-//             CashbillEvents::PAYMENT_CASHBILL_CONFIRMATION_RECEIVED,
-//             new CashbillConfirmationReceivedEvent($instruction, $request->request)
-//         );
+        $this->get('event_dispatcher')->dispatch(
+            CashbillEvents::PAYMENT_CASHBILL_CONFIRMATION_RECEIVED,
+            new CashbillConfirmationReceivedEvent($instruction, $request->request)
+        );
 
         $token = $this->get('webit_accounting_payment_cashbill.token');
         $logger = $this->get('logger');
