@@ -5,13 +5,13 @@ namespace Webit\Accounting\PaymentCashbillBundle\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-
 use JMS\Payment\CoreBundle\Entity\PaymentInstruction;
 use JMS\Payment\CoreBundle\Plugin\Exception\FinancialException;
-
+use Webit\Accounting\PaymentCashbillBundle\Event\CashbillConfirmationReceivedEvent;
 use Webit\Accounting\PaymentCashbillBundle\Event\Events as CashbillEvents;
 use Webit\Accounting\PaymentCashbillBundle\Form\SignCalculatorInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+
 /**
  * Callback controller
  *
@@ -49,7 +49,7 @@ class CallbackController extends Controller
         
         $this->get('event_dispatcher')->dispatch(
             CashbillEvents::PAYMENT_CASHBILL_CONFIRMATION_RECEIVED,
-            new CashbillConfirmationReceivedEvent($instruction, $request->request)
+            new CashbillConfirmationReceivedEvent($pi, $this->getRequest())
         );
 
         $token = $this->get('webit_accounting_payment_cashbill.token');

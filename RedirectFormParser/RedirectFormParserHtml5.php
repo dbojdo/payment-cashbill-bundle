@@ -10,10 +10,14 @@ class RedirectFormParserHtml5 implements RedirectFormParserInterface {
 	 * @return string
 	 * 
 	 */
-	public function getRedirectUrl($html) {
+	public function getRedirectUrl($html) {		
 		$document = new \DOMDocument();
-		$document->loadHTML($html);
-
+		try {
+			$document->loadHTML($html);
+		} catch(\Exception $e) {
+			return false;
+		}
+		
 		$xpath = new \DOMXPath($document);
 		$url = null;
 		foreach ($xpath->query(CssSelector::toXpath('form')) as $node)
