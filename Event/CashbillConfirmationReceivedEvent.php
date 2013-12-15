@@ -3,8 +3,9 @@ namespace Webit\Accounting\PaymentCashbillBundle\Event;
 
 use JMS\Payment\CoreBundle\Model\PaymentInstructionInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\EventDispatcher\Event;
 
-class CashbillConfirmationReceivedEvent {
+class CashbillConfirmationReceivedEvent extends Event {
 	
 	/**
 	 * 
