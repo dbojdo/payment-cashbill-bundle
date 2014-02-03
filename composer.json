@@ -1,5 +1,5 @@
 {
-	"name" : "webit-accounting/payment-cashbill-bundle",
+	"name" : "webit/payment-cashbill-bundle",
 	"description" : "Web-IT Payment Cashbill Bundle",
 	"type" : "symfony-bundle",
 	"authors" : [{
@@ -9,7 +9,8 @@
 	],
 	"keywords" : [
 		"web-it",
-		"order bundle",
+		"cashbill",
+		"payment",
 		"e-commerce"
 	],
 	"homepage" : "http://www.web-it.eu",
