@@ -146,8 +146,12 @@ class CashbillDirectPlugin extends AbstractPlugin
         $this->buzz->getClient()->setOption(CURLOPT_SSL_VERIFYPEER,false);
         $msg = $this->buzz->submit($this->url, $postData);
         
-        $content = $msg->getContent();
-        $url = $this->rfp->getRedirectUrl($content);
+        $url = $msg->getHeader('Location');
+        if(!$url) {
+           $content = $msg->getContent();
+           $url = $this->rfp->getRedirectUrl($content);
+        }
+        
         if($url == false) {
         	throw new \RuntimeException('Cannot determinate Cashbill redirect url.');
         }
@@ -155,24 +159,6 @@ class CashbillDirectPlugin extends AbstractPlugin
         $actionRequest->setAction(new VisitUrl($url));
 
         return $actionRequest;
-    }
-
-    private function parseContent($content) {
-        $matches = array();
-        preg_match('/\<form action\=\"([^\"]*)?\"/',$content, $matches);
-        $url = count($matches) == 2 ? $matches[1] : null; 
-        
-        $matches = array();
-        
-        preg_match('/name\=\"([^\"]*)?\"/',$content, $matches);
-        $tokenName = count($matches) == 2 ? $matches[1] : null;
-        
-        preg_match('/value\=\"([^\"]*)?\"/',$content, $matches);
-        $token = count($matches) == 2 ? $matches[1] : null;
-        
-        $url .= '?'.$tokenName.'='.$token;
-       
-        return $url;
     }
     
     /**
