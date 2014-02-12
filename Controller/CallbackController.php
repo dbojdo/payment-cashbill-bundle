@@ -44,8 +44,15 @@ class CallbackController extends Controller
      */
     public function checkAction()
     {
+        $logger = $this->get('logger');
+        
         $piId = (int)$this->getRequest()->get('userdata');
         $pi = $this->getPaymentInstruction($piId);
+        if(!$pi) {
+            $logger->err(sprintf('[Cashbill - URLC] %s (%d)', 'Payment instruction not found', $piId));
+
+            return new Response('FAIL', 500);
+        }
         
         $this->get('event_dispatcher')->dispatch(
             CashbillEvents::PAYMENT_CASHBILL_CONFIRMATION_RECEIVED,
@@ -53,7 +60,7 @@ class CallbackController extends Controller
         );
 
         $token = $this->get('webit_accounting_payment_cashbill.token');
-        $logger = $this->get('logger');
+        
 
         $reqSign = $this->getRequest()->get('sign');
         $data = array(
