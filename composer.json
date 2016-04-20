@@ -16,14 +16,13 @@
 	"homepage" : "http://www.web-it.eu",
 	"license" : "Web-IT",
 	"require" : {
-		"sensio/buzz-bundle" : "~0.2|~1.0",
 		"php" : ">=5.3.2",
-		"jms/payment-core-bundle" : "~1.0"
+		"jms/payment-core-bundle" : "~1.0",
+		"kriswallsmith/buzz" : "~0.15"
 	},
 	"autoload" : {
-		"psr-0" : {
-			"Webit\\Accounting\\PaymentCashbillBundle" : ""
+		"psr-4" : {
+			"Webit\\Accounting\\PaymentCashbillBundle\\" : ""
 		}
-	},
-	"target-dir" : "Webit/Accounting/PaymentCashbillBundle"
+	}
 }

@@ -30,7 +30,7 @@
             <argument>%webit_accounting_payment_cashbill.url%</argument>
             <argument>%webit_accounting_payment_cashbill.test_mode%</argument>
             <call method="setBuzz">
-            	<argument type="service" id="buzz"></argument>
+            	<argument type="service" id="webit_accounting_payment_cashbill.buzz"></argument>
             </call>
             <tag name="payment.plugin" />
         </service>
@@ -38,5 +38,46 @@
             <tag name="payment.method_form_type" />
             <tag name="form.type" alias="cashbill_direct" />
         </service>
+
+        <!-- Buzz -->
+        <service id="webit_accounting_payment_cashbill.buzz.client" class="Buzz\Client\Curl" public="false">
+            <call method="setTimeout">
+                <argument>5</argument>
+            </call>
+            <call method="setOption">
+                <argument>32</argument> <!-- CURLOPT_SSLVERSION -->
+                <argument>6</argument>
+            </call>
+        </service>
+
+        <service id="webit_accounting_payment_cashbill.buzz" class="Buzz\Browser">
+            <argument type="service" id="webit_accounting_payment_cashbill.buzz.client" />
+            <argument type="service">
+                <service class="Buzz\Message\Factory\Factory" />
+            </argument>
+        </service>
     </services>
 </container>
+
+<parameters>
+<parameter key="buzz.client.class">Buzz\Client\Curl</parameter>
+<parameter key="buzz.message_factory.class">Buzz\Message\Factory\Factory</parameter>
+<parameter key="buzz.browser.class">Buzz\Browser</parameter>
+</parameters>
+
+<services>
+<service id="buzz.message_factory" class="%buzz.message_factory.class%" public="false" />
+<service id="buzz.client" class="%buzz.client.class%" public="false">
+    <call method="setTimeout">
+        <argument>%buzz.client.timeout%</argument>
+    </call>
+    <call method="setProxy">
+        <argument>%buzz.client.proxy%</argument>
+    </call>
+</service>
+
+<service id="buzz" class="%buzz.browser.class%">
+    <argument type="service" id="buzz.client" />
+    <argument type="service" id="buzz.message_factory" />
+</service>
+</services>
