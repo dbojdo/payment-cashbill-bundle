@@ -58,26 +58,3 @@
         </service>
     </services>
 </container>
-
-<parameters>
-<parameter key="buzz.client.class">Buzz\Client\Curl</parameter>
-<parameter key="buzz.message_factory.class">Buzz\Message\Factory\Factory</parameter>
-<parameter key="buzz.browser.class">Buzz\Browser</parameter>
-</parameters>
-
-<services>
-<service id="buzz.message_factory" class="%buzz.message_factory.class%" public="false" />
-<service id="buzz.client" class="%buzz.client.class%" public="false">
-    <call method="setTimeout">
-        <argument>%buzz.client.timeout%</argument>
-    </call>
-    <call method="setProxy">
-        <argument>%buzz.client.proxy%</argument>
-    </call>
-</service>
-
-<service id="buzz" class="%buzz.browser.class%">
-    <argument type="service" id="buzz.client" />
-    <argument type="service" id="buzz.message_factory" />
-</service>
-</services>
