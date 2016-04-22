@@ -2,24 +2,20 @@
 
 namespace Webit\Accounting\PaymentCashbillBundle\Plugin;
 
-use JMS\Payment\CoreBundle\Model\ExtendedDataInterface;
 use JMS\Payment\CoreBundle\Model\PaymentInstructionInterface;
 use JMS\Payment\CoreBundle\Model\FinancialTransactionInterface;
 use JMS\Payment\CoreBundle\Plugin\AbstractPlugin;
 use JMS\Payment\CoreBundle\Plugin\Exception\Action\VisitUrl;
 use JMS\Payment\CoreBundle\Plugin\Exception\ActionRequiredException;
-use JMS\Payment\CoreBundle\Plugin\Exception\TimeoutException;
 use JMS\Payment\CoreBundle\Plugin\ErrorBuilder;
 use JMS\Payment\CoreBundle\Plugin\Exception\FinancialException;
 use JMS\Payment\CoreBundle\Plugin\PluginInterface;
 use JMS\Payment\CoreBundle\Plugin\Exception\BlockedException;
 use JMS\Payment\CoreBundle\Entity\ExtendedData;
-use Webit\Accounting\PaymentCashbillBundle\Form\SignCalculator;
 use Webit\Accounting\PaymentCashbillBundle\Form\SignCalculatorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Webit\Accounting\PaymentCashbillBundle\Client\TokenInterface;
 use Buzz\Browser;
-use Symfony\Component\CssSelector\CssSelector;
 use Webit\Accounting\PaymentCashbillBundle\RedirectFormParser\RedirectFormParserInterface;
 
 class CashbillDirectPlugin extends AbstractPlugin
@@ -69,16 +65,24 @@ class CashbillDirectPlugin extends AbstractPlugin
      * @var RedirectFormParserInterface
      */
     protected $rfp;
-    
+
     /**
-     * 
-     * @param Router $router
+     *
+     * @param RouterInterface|Router $router
+     * @param TokenInterface $token
      * @param SignCalculatorInterface $signCalculator
+     * @param RedirectFormParserInterface $rfp
      * @param string $url
      * @param bool $testMode
      */
-    public function __construct(RouterInterface $router, TokenInterface $token, SignCalculatorInterface $signCalculator, RedirectFormParserInterface $rfp, $url, $testMode)
-    {
+    public function __construct(
+        RouterInterface $router,
+        TokenInterface $token,
+        SignCalculatorInterface $signCalculator,
+        RedirectFormParserInterface $rfp,
+        $url,
+        $testMode
+    ) {
         $this->router = $router;
         $this->token = $token;
         $this->signCalculator = $signCalculator;
@@ -90,7 +94,7 @@ class CashbillDirectPlugin extends AbstractPlugin
     public function setBuzz(Browser $buzz) {
         $this->buzz = $buzz;
     }
-    
+
     /**
      * This method executes a deposit transaction without prior approval
      * (aka "sale", or "authorization with capture" transaction).
@@ -101,7 +105,9 @@ class CashbillDirectPlugin extends AbstractPlugin
      * another transaction.
      *
      * @param FinancialTransactionInterface $transaction The transaction
-     * @param boolean                       $retry       Retry
+     * @param boolean $retry Retry
+     * @throws ActionRequiredException
+     * @throws FinancialException
      */
     public function approveAndDeposit(FinancialTransactionInterface $transaction, $retry)
     {
@@ -141,9 +147,7 @@ class CashbillDirectPlugin extends AbstractPlugin
         }
         $sign = $this->signCalculator->calculateSign($postData);
         $postData['sign'] = $sign;
-        
-        // FIXME: check why SSL invalid
-        $this->buzz->getClient()->setOption(CURLOPT_SSL_VERIFYPEER,false);
+
         $msg = $this->buzz->submit($this->url, $postData);
         
         $url = $msg->getHeader('Location');
@@ -160,7 +164,7 @@ class CashbillDirectPlugin extends AbstractPlugin
 
         return $actionRequest;
     }
-    
+
     /**
      * This method executes an approve transaction.
      *
@@ -172,7 +176,9 @@ class CashbillDirectPlugin extends AbstractPlugin
      * authorized.
      *
      * @param FinancialTransactionInterface $transaction The transaction
-     * @param boolean                       $retry       Retry
+     * @param boolean $retry Retry
+     * @throws BlockedException
+     * @throws FinancialException
      */
     public function approve(FinancialTransactionInterface $transaction, $retry)
     {
@@ -202,9 +208,10 @@ class CashbillDirectPlugin extends AbstractPlugin
      * A typical use case are Credit Card payments.
      *
      * @param FinancialTransactionInterface $transaction The transaction
-     * @param boolean                       $retry       Retry
-     *
+     * @param boolean $retry Retry
      * @return mixed
+     * @throws BlockedException
+     * @throws FinancialException
      */
     public function deposit(FinancialTransactionInterface $transaction, $retry)
     {

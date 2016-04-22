@@ -44,10 +44,6 @@
             <call method="setTimeout">
                 <argument>5</argument>
             </call>
-            <call method="setOption">
-                <argument>32</argument> <!-- CURLOPT_SSLVERSION -->
-                <argument>6</argument>
-            </call>
         </service>
 
         <service id="webit_accounting_payment_cashbill.buzz" class="Buzz\Browser">
