@@ -42,7 +42,7 @@
         <!-- Buzz -->
         <service id="webit_accounting_payment_cashbill.buzz.client" class="Buzz\Client\Curl" public="false">
             <call method="setTimeout">
-                <argument>10</argument>
+                <argument>%webit_accounting_payment_cashbill.timeout%</argument>
             </call>
         </service>
 

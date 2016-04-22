@@ -23,6 +23,8 @@ class WebitAccountingPaymentCashbillExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $container->setParameter('webit_accounting_payment_cashbill.timeout', $config['timeout']);
+
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
@@ -34,5 +36,7 @@ class WebitAccountingPaymentCashbillExtension extends Extension
         foreach(array('url','test_mode','return_route') as $key) {
             $container->setParameter($this->getAlias().'.'.$key, $config[$key]);
         }
+
+
     }
 }
