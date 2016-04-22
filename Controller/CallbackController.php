@@ -2,11 +2,10 @@
 
 namespace Webit\Accounting\PaymentCashbillBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use JMS\Payment\CoreBundle\Entity\PaymentInstruction;
-use JMS\Payment\CoreBundle\Plugin\Exception\FinancialException;
 use Webit\Accounting\PaymentCashbillBundle\Event\CashbillConfirmationReceivedEvent;
 use Webit\Accounting\PaymentCashbillBundle\Event\Events as CashbillEvents;
 use Webit\Accounting\PaymentCashbillBundle\Form\SignCalculatorInterface;
@@ -37,16 +36,17 @@ class CallbackController extends Controller
     private function getSignCalculator() {
         return $this->get('webit_accounting_payment_cashbill.sign_calculator');
     }
-    
+
     /**
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @return Response
      */
-    public function checkAction()
+    public function checkAction(Request $request)
     {
         $logger = $this->get('logger');
         
-        $piId = (int)$this->getRequest()->get('userdata');
+        $piId = (int) $request->get('userdata');
         $pi = $this->getPaymentInstruction($piId);
         if(!$pi) {
             $logger->err(sprintf('[Cashbill - URLC] %s (%d)', 'Payment instruction not found', $piId));
@@ -56,20 +56,17 @@ class CallbackController extends Controller
         
         $this->get('event_dispatcher')->dispatch(
             CashbillEvents::PAYMENT_CASHBILL_CONFIRMATION_RECEIVED,
-            new CashbillConfirmationReceivedEvent($pi, $this->getRequest())
+            new CashbillConfirmationReceivedEvent($pi, $request)
         );
 
-        $token = $this->get('webit_accounting_payment_cashbill.token');
-        
-
-        $reqSign = $this->getRequest()->get('sign');
+        $reqSign = $request->get('sign');
         $data = array(
-        	'id' => $this->getRequest()->get('id'),
-            'service' => $this->getRequest()->get('service'),
-            'orderid' => $this->getRequest()->get('orderid'),
-            'amount' => $this->getRequest()->get('amount'),
-            'userdata' => $this->getRequest()->get('userdata'),
-            'status' => $this->getRequest()->get('status')
+        	'id' => $request->get('id'),
+            'service' => $request->get('service'),
+            'orderid' => $request->get('orderid'),
+            'amount' => $request->get('amount'),
+            'userdata' => $request->get('userdata'),
+            'status' => $request->get('status')
         );
         $calcSign = $this->getSignCalculator()->calculateSign($data);
        
@@ -85,10 +82,10 @@ class CallbackController extends Controller
             return new Response('FAIL', 500);
         }
         
-        $transaction->setReferenceNumber($this->getRequest()->get('orderid'));
-        $amount = (float)$this->getRequest()->get('amount');
+        $transaction->setReferenceNumber($request->get('orderid'));
+        $amount = (float) $request->get('amount');
     
-        $request = $this->getRequest();
+        $request = $request;
         $transaction->getExtendedData()->set('status', $request->get('status'));
         $transaction->getExtendedData()->set('orderid', $request->get('orderid'));
         $transaction->getExtendedData()->set('amount', $amount);
@@ -108,11 +105,9 @@ class CallbackController extends Controller
         return new Response('OK');
     }
     
-    public function returnAction() {
-        $route = $this->container->getParameter('webit_accounting_payment_cashbill.return_route');
-        
-        $data = $this->getRequest()->query->all();
-        $data['payment_instruction_id'] = $this->getRequest()->get('userdata');
+    public function returnAction(Request $request) {
+        $data = $request->query->all();
+        $data['payment_instruction_id'] = $request->get('userdata');
         
         $route = $this->container->getParameter('webit_accounting_payment_cashbill.return_route');
         $url = $this->generateUrl($route,$data,Router::ABSOLUTE_PATH);
