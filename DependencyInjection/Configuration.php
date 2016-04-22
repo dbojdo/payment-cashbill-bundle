@@ -26,7 +26,7 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('url')->defaultValue('https://www.cashbill.pl/cblite/pay.php')->canNotBeEmpty()->end()
             ->scalarNode('return_route')->isRequired()->end()
             ->scalarNode('test_mode')->isRequired()->defaultTrue()->end()
-            ->scalarNode('timeout')->isRequired()->cannotBeEmpty()->defaultValue(10)->end()
+            ->scalarNode('timeout')->cannotBeEmpty()->defaultValue(10)->end()
         ->end();
 
         return $treeBuilder;
